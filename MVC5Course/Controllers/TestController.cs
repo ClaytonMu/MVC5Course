@@ -1,6 +1,7 @@
 ﻿using MVC5Course.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Validation;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -87,7 +88,17 @@ namespace MVC5Course.Controllers
             }
 
             one.Price = one.Price * 2;
-            _db.SaveChanges();
+
+            try
+            {
+                _db.SaveChanges();
+            }
+            catch (DbEntityValidationException e)
+            {
+
+                
+            }
+            
 
             return RedirectToAction("ReadProduct");
         }
@@ -101,7 +112,10 @@ namespace MVC5Course.Controllers
             //    _db.OrderLine.Remove(item);
             //}
 
-            _db.OrderLine.RemoveRange(one.OrderLine);
+            //_db.OrderLine.RemoveRange(one.OrderLine);
+
+            _db.Database.ExecuteSqlCommand("DELETE dbo.OrderLine WHERE ProductId = @p0", id);
+
 
             _db.Product.Remove(one);
             _db.SaveChanges();
@@ -109,5 +123,18 @@ namespace MVC5Course.Controllers
             return RedirectToAction("ReadProduct");
         }
 
+        public ActionResult ProductView()
+        {
+            var data = _db.Database.SqlQuery<ProductViewModel>(
+                @"SELECT * FROM dbo.Product WHERE Active = @p0 AND ProductName like @p1", true, "%Yellow%");
+
+            return View(data);
+        }
+
+        public ActionResult ProductSP()
+        {
+            var data = _db.GetProduct(true, "%Yellow%");
+            return View(data);
+        }
     }
 }
