@@ -1,0 +1,30 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<a href="@Url.Action("FileTest")?dl=1">
+    <img src="@Url.Action("FileTest")" alt="Image" style="width:200px"/>
+</a>
+<input id="btnJosnTest" type="button" name="name" value="Call json action" />
+@section Scripts {
+    <script>
+        $("#btnJosnTest").on("click", function () {
+            //$.get("JsonTest", "", function (data) { console.log(data); })
+
+            $.ajax({
+                url: "JsonTest",
+                data: "",
+                type: "Get",
+                dataType: 'text',
+
+                success: function (msg) {
+                    alert(msg);
+                },
+
+                
+            });
+        })
+    </script>
+}
